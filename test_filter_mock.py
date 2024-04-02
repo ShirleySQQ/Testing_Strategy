@@ -9,7 +9,7 @@ spark = SparkSession.builder.getOrCreate()
 
 
 @patch('filter_Age_Above30.create_spark_session', return_value=spark)
-def test_filter_age(mock_spark_secion):
+def test_filter_mock(mock_spark_secion):
     mock_test_data = 'CustomerAges_mockTest.csv'
     mock_higer30_out = 'mock_higer30_out.csv'
     # Create a Mock DataFrame
@@ -22,3 +22,8 @@ def test_filter_age(mock_spark_secion):
     mock_spark_secion.read.load = MagicMock(return_value=df)
     df.filter.return_value = filter_Age_Above30.filter_age(mock_spark_secion)
     df.filter.assert_called_once_with(df.Age > 31)
+
+
+def test_filter():
+    filtered_records = filter_Age_Above30.filter_age(spark)
+    assert filtered_records.filter(F.col('Age') <= 30).count() == 0
