@@ -8,8 +8,10 @@ logger = logging.getLogger(__name__)
 def output_ageHigh30(spark):
     try:
         out_30_data = 'higher_30.csv'
+        raw_data='CustomerAges.csv'
         # Perform transformation
-        df_transformed = filter_age(spark)
+        df = spark.read.format("csv").option("delimiter", ",").option("header", True).load(raw_data)
+        df_transformed = filter_age(df)
         # Write transformed data
         logger.info("Writing to csv.")
         df_transformed.toPandas().to_csv(out_30_data)
@@ -18,11 +20,9 @@ def output_ageHigh30(spark):
         raise
 
 
-def filter_age(spark):
+def filter_age(df):
     logger.info("Loading data")
-    raw_data = 'CustomerAges.csv'
-    df = spark.read.format("csv").option("delimiter", ",").option("header", True).load(raw_data)
-    df.show(2)
+   # df.show(2)
     logger.info("Transforming data")
     return df.filter(df.Age > 30)
 
